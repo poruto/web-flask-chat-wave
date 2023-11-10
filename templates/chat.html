@@ -102,6 +102,15 @@
         // Type text
         const chatMessageElmnt = document.getElementById("chat_message");
 
+        // Event listener for the "Enter" key
+        chatMessageElmnt.addEventListener('keydown', function(event) {
+            // Check if the pressed key is "Enter" (keycode 13)
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                clientSendChatMessage();
+            }
+        });
+
         // Events
         websocket_events = {"INCONVO" : serverInConvo, "STRANGER_DISCONNECT" : serverStrangerDisconnect,
                            "HEARTBEAT" : serverHeartBeat, "RECEIVED_MESSAGE" : serverReceivedMessage};
@@ -123,6 +132,11 @@
             buttonDisconnect.style.display = "inline-block";
         }
 
+        function scrollMessagesDown()
+        {
+            chatElmnt.scrollTop = chatElmnt.scrollHeight;
+        }
+
         // On message from server (another client)
         function serverReceivedMessage(jsonObject)
         {
@@ -133,6 +147,8 @@
 
             var message = jsonObject.data;
             addChatMessage("stranger", message);
+
+            scrollMessagesDown();
         }
 
         // Check if connection is still opened
@@ -164,6 +180,7 @@
                 websocketSend(data);
                 addChatMessage("me", chatMessageElmnt.value);
                 chatMessageElmnt.value = "";
+                scrollMessagesDown();
             }
         }
 
@@ -231,11 +248,30 @@
             });
 
             // Connection closed
-            socket.addEventListener("close", (event) => {
-                alert("[WebsocketAPIServer] Connection closed.")
-            });
+            socket.addEventListener("close", (event) => socketClose(event));
 
             return socket;
+        }
+
+        async function socketClose(event)
+        {
+            uiDisconnected();
+            await reconnectSocket();
+        }
+
+        async function reconnectSocket()
+        {
+            addChatMessage("system", "Connection has been lost! Trying to reconnect...");
+            await delay(2000);
+
+            try
+            {
+                socket = websocketConnect(websocketHost, websocketPort);
+            }
+            catch
+            {
+                await reconnectSocket();
+            }
         }
 
         function getCountryNameByCode(code)
@@ -282,6 +318,6 @@
 
         myCountryElmnt.innerText = getCountryNameByCode(countryCode);
 
-        const socket = websocketConnect(websocketHost, websocketPort);
+        var socket = websocketConnect(websocketHost, websocketPort);
     </script>
 {% endblock script %}
