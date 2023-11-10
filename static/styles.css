@@ -1,0 +1,228 @@
+/* Root Variables */
+:root
+{
+    --color1: #2c3e50;
+    --color2: #34495e;
+    --scrollColor: #596877;
+    --white: #ecf0f1;
+    --padding: 15px;
+
+    --box_shadow1: inset 0 0 30px rgba(44, 62, 80, 0.6);
+}
+
+/* Apply the custom scrollbar to all elements with overflow */
+::-webkit-scrollbar {
+    width: 12px; /* Set the width of the scrollbar */
+  }
+  
+/* Handle for the scrollbar */
+::-webkit-scrollbar-thumb {
+    background-color: var(--scrollColor); /* Set the color of the scrollbar handle */
+}
+  
+/* Track of the scrollbar (the area the handle moves on) */
+::-webkit-scrollbar-track {
+    background-color: var(--white); /* Set the color of the scrollbar track */
+}
+
+/* Main */
+*
+{
+    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Roboto Mono', monospace;
+    color: var(--white);
+}
+
+body
+{
+    width: calc(100% - 20px);
+
+    margin: 0 auto;
+    background-color: var(--color1);
+}
+
+#footer
+{
+    margin-top: var(--padding);
+    position: fixed;
+    bottom: var(--padding);
+    right: var(--padding);
+}
+
+#content
+{
+    text-align: center;
+    width: 100%;
+    min-height: 80vh;
+
+    margin: 0 auto;
+    margin-top: var(--padding);
+
+    border-radius: 15px;
+}
+
+/* Paragraphs / Text */
+#text_header
+{
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.text1
+{
+    text-align: left;
+    padding: var(--padding);
+}
+
+/* Images */
+#img_logo {
+    pointer-events: none;
+    vertical-align: middle;
+    display: inline-block;
+    width: 75px;
+    animation: appearanceAnimation 1s ease-out, waveAnimation2 4s infinite;
+    animation-delay: 0s, 1s; /* Delay the start of waveAnimation2 by 1s */
+    filter: invert(19%) sepia(98%) saturate(748%) hue-rotate(180deg) brightness(120%) contrast(50%) blur(0.5px) opacity(0.75);
+}
+
+
+/* Boxes */
+.box
+{
+    box-shadow: var(--box_shadow1);
+    background-color: transparent;
+    border: none;
+    padding: var(--padding);
+    border-radius: 5px;
+}
+
+#box_welcome {
+    padding: var(--padding);
+    width: 75vh;
+    min-height: 75vh;
+    margin: 0 auto;
+    margin-top: var(--padding);
+    border-radius: 25px;
+    background-color: var(--color2);
+}
+
+.box1
+{
+    width: fit-content;
+    display: inline-block;
+    vertical-align: top;
+    background-color: var(--color2);
+    padding: var(--padding);
+    border-radius: 5px;
+}
+
+.box_chat
+{
+    padding: var(--padding);
+    width: 90%;
+    min-height: 55vh;
+    margin: 0 auto;
+    margin-top: var(--padding);
+    border-radius: 25px;
+    background-color: var(--color2);
+}
+
+.box_chat_messages
+{
+
+}
+
+.box_chat_input
+{
+
+}
+
+/* UI */
+.button1
+{
+    cursor: pointer;
+    background-color: var(--color1);
+
+    padding: var(--padding);
+    border-radius: 5px;
+
+    opacity: 0.75;
+
+    transition: opacity 0.5s ease-out;
+}
+
+.button1:hover
+{
+    opacity: 1.0;
+}
+
+.checkbox1
+{
+    width: 25px;
+    height: 25px;
+}
+
+/* Tables */
+.table1 td
+{
+    text-align: left;
+    padding: 15px;
+}
+
+/* Navigation */
+#nav
+{
+    width: calc(100% - 100px);
+    top: 0;
+    padding: var(--padding);
+}
+
+/* Animations */
+.wave {
+    position: relative;
+    overflow: hidden;
+}
+
+.wave::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 20px; /* Increased height for a more pronounced wave */
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+    animation: waveAnimation 3s infinite;
+}
+
+@keyframes waveAnimation {
+    0% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(-15px) scaleY(1.2);
+    }
+    100% {
+        transform: translateY(0) scaleY(1);
+    }
+}
+
+@keyframes waveAnimation2 {
+    0%, 100% {
+        transform: translateY(0) rotate(0);
+        border-radius: 0;
+    }
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+        border-radius: 50%;
+    }
+}
+@keyframes appearanceAnimation {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

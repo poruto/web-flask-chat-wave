@@ -1,0 +1,74 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    {{project_name}}
+{% endblock title  %}
+
+{% block content %}
+    <input id="country_selector" style="display: none;" type="text">
+
+    <div class="box1 box">
+        <table class="table1">
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    My Information
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Preferred Country</strong>
+                </td>
+                <td id="myCountry">
+    
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="box1 box">
+        <table class="table1">
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    Stranger
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Preferred Country</strong>
+                </td>
+                <td id="strangerCountry">
+    
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="box_chat wave box">
+        <div class="box_chat_messages">
+
+        </div>
+
+        <div class="box_chat_input">
+
+        </div>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script>
+        const countryCode = "{{country_code}}";
+        const myCountryElmnt = document.getElementById("myCountry");
+        const strangerCountryElmnt = document.getElementById("strangerCountry");
+
+        function getCountryNameByCode(code)
+        {
+            initCountrySelector();
+            setCountry(code);
+            const countryName = getCountryData().name;
+            destroyCountrySelector();
+            return countryName;
+        }
+
+        myCountryElmnt.innerText = getCountryNameByCode(countryCode);
+    </script>
+{% endblock script %}

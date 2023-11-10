@@ -1,0 +1,38 @@
+<!doctype html>
+<html id="html">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta name="keywords" content="Omegle, Chat, OmeTV, Chat">
+        <meta name="author" content="PoruTo">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@200&family=Roboto+Mono:wght@100&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{url_for('static', filename='countrySelect.min.css')}}">
+
+        <script src="{{url_for('static', filename='jquery-3.7.1.min.js')}}"></script>
+        <script src="{{url_for('static', filename='countrySelect.min.js')}}"></script>
+        <script src="{{url_for('static', filename='chatwave.js')}}"></script>
+
+        {% block head %}
+        {% endblock head %}
+    </head>
+
+    <body>
+        <header>
+            {% include 'nav.html' %}
+        </header>
+
+        <div id="content">
+            {% block content %}
+            {% endblock content %}
+        </div>
+
+        {% include 'footer.html'   %}
+    </body>
+
+    {% block script %}
+    {% endblock %}
+</html>

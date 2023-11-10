@@ -1,0 +1,73 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    {{project_name}}
+{% endblock title  %}
+
+{% block content %}
+    <div class="box wave" id="box_welcome">
+        <div onclick="startChat()" class="button1" style="text-align: center;">
+            Join the Wave – Start Chat Now!
+        </div>
+
+        <table class="table1">
+            <tr>
+                <td>
+                    <input type="checkbox" class="checkbox1 box" id="checkbox_terms"> 
+                </td>
+                <td>
+                    By pressing "Join the Wave – Start Chat Now!" I agree with <a target="_blank" href="{{url_for('terms')}}">Terms of Use</a>.
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Country
+                </td>
+                <td>
+                    <input id="country_selector" class="box" type="text">
+                </td>
+                <td>
+                    Choose your country for local vibes, but don't worry – if there's no match, you'll still dive into exciting random chats with people from around the world. Start your Chat Wave journey now!
+                </td>
+            </tr>
+            
+        </table>
+    
+    </div>
+
+    <form action="{{url_for('chat')}}" method="post" style="display: none;" id="form_start_chat">
+        <input type="text" name="country_code" id="country_code">
+        <input type="text" name="country_name" id="country_name">
+    </form>
+
+{% endblock content %}
+
+{% block script %}
+    <script>
+        const formStartChat = document.getElementById("form_start_chat");
+        const countryCode = document.getElementById("country_code");
+        const termsAgreed = document.getElementById("checkbox_terms");
+
+        function startChat()
+        {
+
+            console.log("Start chat");
+            
+            if (termsAgreed.checked)
+            {
+                var data = getCountryData();
+                countryCode.value = data.iso2;
+                formStartChat.submit();
+            }
+            else
+            {
+                alert("Please check the Terms of Use box before riding the Chat Wave! 🌊💬");
+
+            }
+        
+        }
+
+        initCountrySelector();
+    </script>
+{% endblock script %}
