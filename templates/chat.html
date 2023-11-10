@@ -11,7 +11,7 @@
         <table class="table2">
             <tr>
                 <th>
-                    Who
+                    Identity
                 </th>
                 <th>
                     Country
@@ -107,6 +107,8 @@
         function uiDisconnected()
         {
             strangerCountryElmnt.innerText = "";
+            strangerAgeElmnt.innerText = "";
+            strangerSexElmnt.innerText = "";
             buttonDisconnect.style.display = "none";
             buttonReconnect.style.display = "inline-block";
             buttonSend.style.display = "none";
