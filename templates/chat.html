@@ -80,6 +80,9 @@
         const myAge = "{{age}}";
         const mySex = "{{sex}}";
 
+        // Audio
+        var waterDrop = new Audio("{{url_for('static', filename='sounds/water_drop.wav')}}");
+
         // Elements
         const myCountryElmnt = document.getElementById("myCountry");
         const strangerCountryElmnt = document.getElementById("strangerCountry");
@@ -123,6 +126,11 @@
         // On message from server (another client)
         function serverReceivedMessage(jsonObject)
         {
+            if (document.visibilityState == "hidden")
+            {
+                waterDrop.play();
+            }
+
             var message = jsonObject.data;
             addChatMessage("stranger", message);
         }
