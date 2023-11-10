@@ -8,48 +8,68 @@
     <input id="country_selector" style="display: none;" type="text">
 
     <div class="box1 box">
-        <table class="table1">
+        <table class="table2">
             <tr>
-                <td colspan="2" style="text-align: center;">
-                    My Information
-                </td>
+                <th>
+                    Who
+                </th>
+                <th>
+                    Country
+                </th>
+                <th>
+                    Age
+                </th>
+                <th>
+                    Sex
+                </th>
             </tr>
             <tr>
-                <td>
-                    <strong>Preferred Country</strong>
+                <td class="me">
+                    Me
                 </td>
                 <td id="myCountry">
-    
+                </td>
+                <td>
+                    {{age}}
+                </td>
+                <td>
+                    {{sex}}
                 </td>
             </tr>
-        </table>
-    </div>
 
-    <div class="box1 box">
-        <table class="table1">
             <tr>
-                <td colspan="2" style="text-align: center;">
+                <td class="stranger">
                     Stranger
                 </td>
-            </tr>
-            <tr>
-                <td>
-                    <strong>Preferred Country</strong>
-                </td>
                 <td id="strangerCountry">
-    
+                        
+                </td>
+                <td id="strangerAge">
+
+                </td>
+                <td id="strangerSex">
+
                 </td>
             </tr>
         </table>
     </div>
 
     <div class="box_chat wave box">
-        <div class="box_chat_messages">
-
+        <div id="chat" class="box_chat_messages box">
         </div>
 
-        <div class="box_chat_input">
+        <div class="box_chat_input box">
+            <textarea id="chat_message" class="chat_input"></textarea>
 
+            <div id="button_send" style="display: none;" class="button2" onclick="clientSendChatMessage()">
+                SEND
+            </div>
+            <div id="button_reconnect" style="display: none;" class="button2" onclick="clientReconnect()">
+                RECONNECT
+            </div>
+            <div id="button_disconnect" class="button2" onclick="clientDisconnect()">
+                DISCONNECT
+            </div>
         </div>
     </div>
 {% endblock content %}
@@ -57,8 +77,156 @@
 {% block script %}
     <script>
         const countryCode = "{{country_code}}";
+        const myAge = "{{age}}";
+        const mySex = "{{sex}}";
+
+        // Elements
         const myCountryElmnt = document.getElementById("myCountry");
         const strangerCountryElmnt = document.getElementById("strangerCountry");
+        const strangerAgeElmnt = document.getElementById("strangerAge");
+        const strangerSexElmnt = document.getElementById("strangerSex");
+        const chatElmnt = document.getElementById("chat");
+
+        // Websocket
+        const websocketHost = "{{websocket_host}}";
+        const websocketPort = "{{websocket_port}}";
+
+        // Buttons
+        const buttonDisconnect = document.getElementById("button_disconnect");
+        const buttonReconnect = document.getElementById("button_reconnect");
+        const buttonSend = document.getElementById("button_send");
+
+        // Type text
+        const chatMessageElmnt = document.getElementById("chat_message");
+
+        // Events
+        websocket_events = {"INCONVO" : serverInConvo, "STRANGER_DISCONNECT" : serverStrangerDisconnect,
+                           "HEARTBEAT" : serverHeartBeat, "RECEIVED_MESSAGE" : serverReceivedMessage};
+
+        // UI changes
+        function uiDisconnected()
+        {
+            strangerCountryElmnt.innerText = "";
+            buttonDisconnect.style.display = "none";
+            buttonReconnect.style.display = "inline-block";
+            buttonSend.style.display = "none";
+        }
+
+        function uiConnected()
+        {
+            buttonReconnect.style.display = "none";
+            buttonDisconnect.style.display = "inline-block";
+        }
+
+        // On message from server (another client)
+        function serverReceivedMessage(jsonObject)
+        {
+            var message = jsonObject.data;
+            addChatMessage("stranger", message);
+        }
+
+        // Check if connection is still opened
+        function serverHeartBeat()
+        {
+            console.log("Server heart beat received.");
+        }
+
+        // When conversation is established
+        function serverInConvo(jsonObject)
+        {
+            var name = getCountryNameByCode(jsonObject.countryCode);
+            strangerCountryElmnt.innerText = name;
+            strangerSexElmnt.innerText = jsonObject.sex;
+            strangerAgeElmnt.innerText = jsonObject.age;
+
+            buttonSend.style.display = "inline-block";
+
+            uiConnected();
+            addChatMessage("system", "Stranger has been found! Chat now.");
+        }
+
+        // Client sends massage from chat input text
+        function clientSendChatMessage()
+        {
+            if (chatMessageElmnt.value != "")
+            {
+                data = {"event" : "message", "data" : chatMessageElmnt.value};
+                websocketSend(data);
+                addChatMessage("me", chatMessageElmnt.value);
+                chatMessageElmnt.value = "";
+            }
+        }
+
+        // When stranger disconnects
+        function serverStrangerDisconnect(jsonObject)
+        {
+            uiDisconnected();
+            addChatMessage("system", "Stranger disconnected!");
+        }
+
+        function clientReconnect()
+        {
+            clearChat();
+            clientSearching();
+        }
+
+        // Disconnect this client
+        function clientDisconnect()
+        {
+            uiDisconnected();
+            addChatMessage("system", "You disconnected!")
+            data = {"event" : "disconnect"};
+            websocketSend(data);
+        }
+
+        // Search for conversation
+        function clientSearching()
+        {
+            uiConnected();
+            data = {"event" : "searching", "countryCode" : countryCode, "age" : myAge, "sex" : mySex};
+            websocketSend(data);
+            addChatMessage("system", "Searching for stranger...");
+        }
+
+        function capitalizeFirstLetter(inputString) {
+         return inputString.charAt(0).toUpperCase() + inputString.slice(1);
+        }
+
+        function clearChat()
+        {
+            chatElmnt.innerHTML = "";
+        }
+
+        function websocketSend(dictObj)
+        {
+            socket.send(JSON.stringify(dictObj));
+        }
+
+        function websocketConnect(host, port)
+        {
+            // Create a WebSocket connection
+            const socket = new WebSocket("ws://" + host + ":" + port);
+
+            // Connection opened
+            socket.addEventListener("open", (event) => {
+                console.log("WebSocket connection opened.");
+                clientReconnect();
+            });
+
+            // Listen for messages from the server
+            socket.addEventListener("message", (event) => {
+                console.log(event.data);
+                var jsonObject = JSON.parse(event.data);
+                websocket_events[jsonObject.event](jsonObject);
+            });
+
+            // Connection closed
+            socket.addEventListener("close", (event) => {
+                alert("[WebsocketAPIServer] Connection closed.")
+            });
+
+            return socket;
+        }
 
         function getCountryNameByCode(code)
         {
@@ -69,6 +237,41 @@
             return countryName;
         }
 
+        function addChatMessage(who, msg)
+        {
+            var chatItem = document.createElement("div");
+            var dateElmnt = document.createElement("div");
+            var whoElmnt = document.createElement("div");
+            var messageElmnt = document.createElement("div");
+
+            chatItem.className = "chat_item";
+            whoElmnt.classList.add("who");
+            whoElmnt.classList.add(who);
+            messageElmnt.className = "message";
+            whoElmnt.innerText = capitalizeFirstLetter(who);
+            messageElmnt.innerText = msg;
+
+            dateElmnt.className = "date";
+
+            var currentDate = new Date();
+
+            var timestampString = currentDate.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            dateElmnt.innerText = timestampString;
+
+            chatItem.appendChild(dateElmnt);
+            chatItem.appendChild(whoElmnt);
+            chatItem.appendChild(messageElmnt);
+            
+            chatElmnt.appendChild(chatItem);
+        }
+
         myCountryElmnt.innerText = getCountryNameByCode(countryCode);
+
+        const socket = websocketConnect(websocketHost, websocketPort);
     </script>
 {% endblock script %}

@@ -1,11 +1,16 @@
 from flask import *
 from flask_session import Session
+from websocket_server import WebsocketServer
 
 import secrets
 
-#  Settings
+#  Website settings
 HOST = "127.0.0.1"
 WEB_PORT = 8080
+
+#  Websocket settings
+EXTERNAL_HOST = "127.0.0.1"
+WEBSOCKET_PORT = 8081
 
 #  Init
 app = Flask(__name__)
@@ -30,7 +35,9 @@ def terms():
 def chat():
     if request.method == "POST":
         if "country_code" in request.form:
-            return render_template("chat.html", country_code=request.form["country_code"])
+            return render_template("chat.html", country_code=request.form["country_code"],
+                                   websocket_host=EXTERNAL_HOST, websocket_port=WEBSOCKET_PORT,
+                                   age=request.form["age"], sex=request.form["sex"])
     
     return render_template("main.html")
 
@@ -48,6 +55,9 @@ def inject_vars():
     
 
 if __name__ == '__main__':
-    app.run(host=HOST, port=WEB_PORT, debug=True, use_reloader=True)
+    ws = WebsocketServer(EXTERNAL_HOST, WEBSOCKET_PORT)
+    ws.run_in_thread()
+
+    app.run(host=HOST, port=WEB_PORT, debug=True, use_reloader=False)
     
     

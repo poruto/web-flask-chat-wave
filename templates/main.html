@@ -31,6 +31,31 @@
                     Choose your country for local vibes, but don't worry – if there's no match, you'll still dive into exciting random chats with people from around the world. Start your Chat Wave journey now!
                 </td>
             </tr>
+
+            <tr>
+                <td>
+                    Age
+                </td>
+                <td>
+                    <input id="age" class="button1" type="number" min="10" max="65" value="18">
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Sex
+                </td>
+                <td>
+                    <select class="button1" id="sex">
+                        <option value="Male">
+                            Male
+                        </option>
+                        <option value="Female">
+                            Female
+                        </option>
+                    </select>
+                </td>
+            </tr>
             
         </table>
     
@@ -39,6 +64,8 @@
     <form action="{{url_for('chat')}}" method="post" style="display: none;" id="form_start_chat">
         <input type="text" name="country_code" id="country_code">
         <input type="text" name="country_name" id="country_name">
+        <input type="text" name="age" id="info_age">
+        <input type="text" name="sex" id="info_sex">
     </form>
 
 {% endblock content %}
@@ -57,15 +84,18 @@
             if (termsAgreed.checked)
             {
                 var data = getCountryData();
+
+                // Set form data to send it by POST request when submit form
                 countryCode.value = data.iso2;
+                document.getElementById("info_age").value = document.getElementById("age").value;
+                document.getElementById("info_sex").value = document.getElementById("sex").value;
+
                 formStartChat.submit();
             }
             else
             {
                 alert("Please check the Terms of Use box before riding the Chat Wave! 🌊💬");
-
             }
-        
         }
 
         initCountrySelector();
