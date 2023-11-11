@@ -1,4 +1,4 @@
-# web-flask-chat
+# web-flask-chat-wave
 
 It's just a 2 days project I've done for fun.
  
